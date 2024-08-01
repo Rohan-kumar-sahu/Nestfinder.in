@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Nest Finder</title>
+    <link rel="icon" href="images/Nest_Finder1.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .payment-details {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .payment-details h2 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .form-group img {
+            width: 200px;
+            height: 200px;
+            display: block;
+            margin: 10px auto;
+        }
+        .timer {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 500px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-details">
+        <h2>Payment Details</h2>
+        <p id="property-address"></p>
+        <p id="property-details"></p>
+        <div class="form-group">
+            <button type="button" onclick="showPopup('card')">Credit/Debit Card</button>
+            <button type="button" onclick="showPopup('upi')">UPI</button>
+            <button type="button" onclick="showPopup('qr-code')">QR Code</button>
+        </div>
+    </div>
+
+    <div id="card" class="popup hidden">
+        <h3>Card Payment</h3>
+        <form id="card-form">
+            <div class="form-group">
+                <label for="card-element">Credit/Debit Card</label>
+                <div id="card-element"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit Payment</button>
+                <button type="button" onclick="hidePopup('card')">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="upi" class="popup hidden">
+        <h3>UPI Payment</h3>
+        <form id="upi-form">
+            <div class="form-group">
+                <label for="upi-id">UPI ID</label>
+                <input type="text" id="upi-id" name="upi-id" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit Payment</button>
+                <button type="button" onclick="hidePopup('upi')">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="qr-code" class="popup hidden">
+        <h3>QR Code Payment</h3>
+        <div class="form-group">
+            <label>Scan to Pay</label>
+            <img id="qr-code-img" src="./images/qr-code1.png" alt="QR Code">
+        </div>
+        <div class="timer" id="timer">QR code will refresh in <span id="countdown">30</span> seconds</div>
+        <div class="form-group">
+            <button type="button" onclick="hidePopup('qr-code')">Cancel</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay hidden"></div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const queries = queryString.split("&");
+            queries.forEach(query => {
+                const [key, value] = query.split("=");
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = getQueryParams();
+            document.getElementById('property-address').textContent = `Address: ${params.address}`;
+            document.getElementById('property-details').textContent = `Details: ${params.details}`;
+        });
+
+        // Initialize Stripe
+        var stripe = Stripe('your-publishable-key-here');
+        var elements = stripe.elements();
+
+        var style = {
+            base: {
+                color: '#32325d',
+                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a'
+            }
+        };
+
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+
+        document.getElementById('card-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    alert(result.error.message);
+                } else {
+                    stripeTokenHandler(result.token, 'card');
+                }
+            });
+        });
+
+        function stripeTokenHandler(token, type) {
+            var form = document.getElementById(type + '-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+            form.submit();
+        }
+
+        let countdown = 30;
+        const countdownElement = document.getElementById('countdown');
+        const qrCodeElement = document.getElementById('qr-code-img');
+        const qrCodeUrls = [
+            './images/qr-code1.png',
+            './images/qr-code2.png',
+            './images/qr-code3.png'
+        ];
+        let qrCodeIndex = 0;
+
+        function updateQrCode() {
+            qrCodeIndex = (qrCodeIndex + 1) % qrCodeUrls.length;
+            qrCodeElement.src = qrCodeUrls[qrCodeIndex];
+        }
+
+        setInterval(() => {
+            countdown--;
+            if (countdown === 0) {
+                countdown = 30;
+                updateQrCode();
+            }
+            countdownElement.textContent = countdown;
+        }, 1000);
+
+        function showPopup(type) {
+            document.getElementById(type).classList.remove('hidden');
+            document.getElementById('overlay').classList.remove('hidden');
+        }
+
+        function hidePopup(type) {
+            document.getElementById(type).classList.add('hidden');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.querySelectorAll('.popup').forEach(popup => {
+                popup.classList.add('hidden');
+            });
+            document.getElementById('overlay').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
