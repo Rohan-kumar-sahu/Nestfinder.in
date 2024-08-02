@@ -12,3 +12,11 @@ document.getElementById('contact-form').addEventListener('submit', function(even
         alert('Please fill out all fields.');
     }
 });
+
+const navToggle = document.getElementById('navToggle');
+const navbar = document.getElementById('navbar');
+
+navToggle.addEventListener('click', () => {
+  navbar.classList.toggle('active');
+  navToggle.classList.toggle('active');
+});

@@ -242,3 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
         propertyList.appendChild(propertyCard);
     });
 });
+
+const navToggle = document.getElementById('navToggle');
+const navbar = document.getElementById('navbar');
+
+navToggle.addEventListener('click', () => {
+  navbar.classList.toggle('active');
+  navToggle.classList.toggle('active');
+});

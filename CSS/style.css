@@ -199,105 +199,126 @@
   }
   
   /*======== HEADER STYLE =========*/
-  .header{
-      background-color: var(--white);
-      position:sticky;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding-block: 15px;
-      z-index: 4;
-  }
-  
-  .header.active{
-      box-shadow: var(--shadow-1);
-  }
-  
-  .header > .container{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-  }
-  
-  .logo{
-      font-size: 2.2rem;
-      font-weight: var(--fw-600);
-      color: var(--black);
-  }
-  
-  .logo ion-icon{
-      display: inline-block;
-      color: var(--sea-green);
-      --ionicon-stroke-width: 50px;
-  }
-  
-  .nav-toggle-btn{
-      font-size: 35px;
-      color: var(--oxford-blue);
-  }
-  
-  .nav-toggle-btn ion-icon{
-      --ionicon-stroke-width: 30px;
-  }
-  
-  .nav-toggle-btn.active .menu-icon,
-  .nav-toggle-btn .close-icon{
-      display: none;
-  }
-  
-  .nav-toggle-btn .menu-icon,
-  .nav-toggle-btn.active .close-icon{
-      display: block;
-  }
-  
-  .header .btn{
-      margin-inline-start: auto;
-  }
-  
-  .navbar{
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      background-color: var(--white);
-      padding: 0;
-      max-height: 0;
-      overflow: hidden;
-      visibility: visible;
-      transition: .25s var(--cubic-out);
-  }
-  
-  
-  .navbar.active{
-      max-height: 260px;
-      visibility: visible;
-      box-shadow: var(--shadow-1);
-      transition-duration: 0.5s;
-  }
-  
-  .navbar-list{
-      margin-block: 10px;
-      opacity: 0;
-      transition: var(--transition);
-  }
-  
-  .navbar.active .navbar-list{
-      opacity: 1;
-  }
-  
-  .navbar-link{
-      color: var(--oxford-blue);
-      font-weight: var(--fw-500);
-      letter-spacing: 1px;
-      padding: 12px 25px;
-  }
-  
-  .navbar-link:is(hover, :focus){
-      color: var(--green-pigment);
-  }
-  
+  header{
+    background-color: var(--white);
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-block: 15px;
+    z-index: 4;
+}
+
+.header.active{
+    box-shadow: var(--shadow-1);
+}
+
+.header > .container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo{
+    font-size: 2.2rem;
+    font-weight: var(--fw-600);
+    color: var(--black);
+}
+
+.logo ion-icon{
+    display: inline-block;
+    color: var(--sea-green);
+    --ionicon-stroke-width: 50px;
+}
+
+.nav-toggle-btn{
+    font-size: 35px;
+    color: var(--oxford-blue);
+    display: none;
+}
+
+.nav-toggle-btn ion-icon{
+    --ionicon-stroke-width: 30px;
+}
+
+.nav-toggle-btn.active .menu-icon,
+.nav-toggle-btn .close-icon{
+    display: none;
+}
+
+.nav-toggle-btn .menu-icon,
+.nav-toggle-btn.active .close-icon{
+    display: block;
+}
+
+.header .btn{
+    margin-inline-start: auto;
+}
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.navbar-list{
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-link{
+    color: var(--oxford-blue);
+    font-weight: var(--fw-500);
+    letter-spacing: 1px;
+    padding: 12px 25px;
+    transition: var(--transition);
+}
+
+.navbar-link:hover, 
+.navbar-link:focus{
+    color: var(--green-pigment);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .nav-toggle-btn {
+        display: block;
+    }
+
+    .navbar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--white);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .navbar.active {
+        max-height: 300px;
+    }
+
+    .navbar-list {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+    }
+
+    .navbar-link {
+        width: 100%;
+        text-align: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--gainsboro);
+    }
+
+    .navbar-link:last-child {
+        border-bottom: none;
+    }
+}
   /*=========== main ==========*/
   .article{
       position: relative;
@@ -1042,4 +1063,3 @@
           height: 600px;
       }
   }
- 

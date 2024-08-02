@@ -1,3 +1,12 @@
+const navToggle = document.getElementById('navToggle');
+const navbar = document.getElementById('navbar');
+
+navToggle.addEventListener('click', () => {
+  navbar.classList.toggle('active');
+  navToggle.classList.toggle('active');
+});
+
+
 const plots = [
     {
         sectionNumber: '456/23',
@@ -190,3 +199,5 @@ plots.forEach(plot => {
 });
 
 addEventListeners();
+
+
